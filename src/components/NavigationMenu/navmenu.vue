@@ -2,7 +2,7 @@
   <div id="navmenu">
     <div id="menu">
       <div id="myPage"class="btn">
-        <router-link to="/home/mypage"  tag="span"active-class="active">
+        <router-link to="/home/news"  tag="span" active-class="active">
           我 的 页 面
         </router-link>
       </div>
@@ -17,7 +17,7 @@
 
       <div id="Other" class="Other">
         <ul class="Others" >
-          <router-link to="/home/Setting" tag="li"active-class="active">
+          <router-link to="/home/Setting" tag="li" active-class="active">
               个 人 中 心
           </router-link>
           <router-link v-for="name in others" :to="{path:name.path}" tag="li" active-class="active3" v-if="getAdmin">
@@ -63,16 +63,16 @@ export default {
           name:'部 门 管 理',
           path:'/home/StaffManagement',
           active:false
-        },
-        {
-          name:'登 录 I P',
-          path:'/home/LoginIP',
-          active:false
-        },
-        {
-          name:'操 作 日 志',
-          path:'/home/OperationLog',
-          active:false
+//        },
+//        {
+//          name:'登 录 I P',
+//          path:'/home/LoginIP',
+//          active:false
+//        },
+//        {
+//          name:'操 作 日 志',
+//          path:'/home/OperationLog',
+//          active:false
         }
       ]
 

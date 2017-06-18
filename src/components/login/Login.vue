@@ -37,9 +37,7 @@ export default {
 
     login(){
       if(this.loginInspect()){
-
-        console.log("login");
-        console.log(this.getCookie("username"));
+        this.setCookieNull();
         if(this.getCookie("username") !=="" && this.getCookie("access_token") !=="" ){
           this.$router.push('../Loading');
         }else {

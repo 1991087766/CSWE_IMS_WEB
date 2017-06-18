@@ -40,7 +40,7 @@
             暂未绑定业务员
             <input class="btn1" type="button" @click="setData(url,items)" value="查 询" >
             <input class="btn1" type="button" @click="ChangeSalesman" value="变更业务员" >
-            <input class="btn1" type="button" value="新增客户" >
+            <!--<input class="btn1" type="button" value="新增客户" >-->
             <vue-xlsx-table @on-select-file="handleSelectedFile" class="xlsx" >
               信 息 导 入
             </vue-xlsx-table>
@@ -77,23 +77,23 @@
           </thead>
           <tbody class="tbody">
             <tr class="tbody_tr" v-for="row in services">
-              <td style="width: 2%"><input type="checkbox"  id="row['ID']" v-model="alter.checkboxModel " @click='checkSingle(row["ID"])'  /></td>
+              <td style="width: 2%"><input type="checkbox"  id="row['编号']" @click='checkSingle(row["编号"])'  /></td>
               <td style="width: 4%">{{CS[row["No."]-1]}}</td>
-              <td style="width: 4%">{{row["PLATER_NUMBER"]}}</td>
-              <td style="width: 6%">{{row["VIN_NO"]}}</td>
-              <td style="width: 7%">{{row["CUSTUMER_NAME"]}}</td>
-              <td style="width: 6%">{{row["BRAND"]}}</td>
-              <td style="width: 7%">{{row["MODEL"]}}</td>
-              <td style="width: 7%">{{row["ENGINE"]}}</td>
-              <td style="width: 5%">{{row["PHONE"]}}</td>
-              <td style="width: 8%">{{row["IDCARD"]}}</td>
+              <td style="width: 4%">{{row["车牌号"]}}</td>
+              <td style="width: 6%">{{row["车架号"]}}</td>
+              <td style="width: 7%">{{row["客户名称"]}}</td>
+              <td style="width: 6%">{{row["品牌"]}}</td>
+              <td style="width: 7%">{{row["车型号"]}}</td>
+              <td style="width: 7%">{{row["发动机号"]}}</td>
+              <td style="width: 5%">{{row["手机"]}}</td>
+              <td style="width: 8%">{{row["身份证号"]}}</td>
               <!--<td style="width: 4%" v-on:click="getDatas(row['COMMERCIAL'])"></td>-->
               <td style="width: 4%">{{services_time1[row["No."]-1]}}</td>
               <td style="width: 4%">{{services_time2[row["No."]-1]}}</td>
               <td style="width: 4%">{{services_time3[row["No."]-1]}}</td>
-              <td>{{row["ADDRESS"]}}</td>
-              <td style="width: 4%">{{row["STATE"]}}</td>
-              <td style="width: 12%"><button >编辑</button><button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['ID'])">删除</button><button @click="ChangeSalesman2(row['ID'])">更换业务员</button></td>
+              <td>{{row["地址"]}}</td>
+              <td style="width: 4%">{{row["状态"]}}</td>
+              <td style="width: 12%"><button >编辑</button><button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['编号'])">删除</button><button @click="ChangeSalesman2(row['编号'])">更换业务员</button></td>
             </tr>
           </tbody>
 
@@ -155,14 +155,38 @@
         <span>{{errorInfo}}</span>
       </div>
     </div>
+    <AddCustomer v-if="false"></AddCustomer>
+    <div class="alter" v-if="false">
+      <div class="alterCustomer">
+        <span class="alterCustomer_title ">修改客户信息</span>
+        <div class="alterCustomer_info">
+          <table >
+            <tbody>
+            <tr class="alter_tr">
+              <td >
+                :<input class="" type="text"  placeholder="车牌、手机号、客户名、车架号、发动机号">
+              </td>
+            </tr>
+            </tbody>
 
+
+          </table>
+        </div>
+
+        <input class="btn1 delBtn btn_position" type="button" @click="sendPostChangeSalesman" value="确定" >
+        <input class="btn1 btn_position" type="button" @click="ChangeSalesman" value="取消" >
+      </div>
+    </div>
   </div>
 </template>
 
 <script >
+  import AddCustomer from "./addCustomer"
+
 export default {
-  // name:"customerManagementAdmin",
+   name:"customerManagementAdmin",
   components: {
+    AddCustomer
   },
   data() {
     return{
@@ -301,11 +325,11 @@ export default {
         this.delInfo.information = [];
 
         for (let i=0;i<this.services.length;i++){
-          this.alter.checkboxModel.push(this.services[i]["ID"]);
-          this.delInfo.information.push(this.services[i]["ID"])
+          this.alter.checkboxModel.push(this.services[i]["编号"]);
+          this.delInfo.information.push(this.services[i]["编号"])
         }
       }
-//      console.log(this.delInfo.information)
+      console.log(this.delInfo.information)
     },
 
     delInfoData(value){
@@ -323,14 +347,14 @@ export default {
       this.delInfo.dellist = false;
     },
     delData(){
-//      console.log(this.delInfo.information);
-//      console.log(this.delInfo);
+      console.log("information:"+this.delInfo.information);
+      console.log(this.delInfo);
       this.sendPost("/delInfo",this.delInfo);
     },
     delDataList(){
       if(this.delInfo.information.length!==0){
         this.sendPost("/delInfo",this.delInfo);
-        this.delInfo.information =[]
+
       }
     },
 
@@ -389,15 +413,23 @@ export default {
     },
     //处理数据
     analysis(dataSource){
-      if(dataSource.code.MessageCode===1001000){
-        this.$store.commit("setErrorinfo","");
-        this.services = dataSource.information;
-        this.CS = [];
-        this.services_time1=[];
-        this.services_time2=[];
-        this.services_time3=[];
-        this.getServicesDate();
-        this.tfoot.total = dataSource.pages.total;
+      if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1003000){
+          if(dataSource.code.MessageCode===1001000){
+            this.$store.commit("setErrorinfo","");
+            this.services = dataSource.information;
+            this.CS = [];
+            this.services_time1=[];
+            this.services_time2=[];
+            this.services_time3=[];
+            this.getServicesDate();
+            this.tfoot.total = dataSource.pages.total;
+          }else if(dataSource.code.MessageCode===1003000){
+            this.delInfodel();
+            this.setData(this.url,this.items)
+          }
+
+      }else if(dataSource.code.MessageCode===1003001){
+        this.ErrorInfo(dataSource.code.MsgInfo)
       }else{
         this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);
         this.$router.push('../login');
@@ -405,14 +437,14 @@ export default {
     },
     getServicesDate(){
       for(let i = 0;this.services.length>i;i++){
-        if (this.services[i]["CUSTOMER_SERVICE"]==="null"||this.services[i]["CUSTOMER_SERVICE"]==="客服"){
+        if (this.services[i]["客服"]==="null"||this.services[i]["客服"]==="客服"){
           this.CS.push("")
         }else {
-          this.CS.push(this.services[i]["CUSTOMER_SERVICE"])
+          this.CS.push(this.services[i]["客服"])
         }
-        this.services_time1.push(this.getDates(this.services[i]["COMMERCIAL"]));
-        this.services_time2.push(this.getDates(this.services[i]["COMPULSORY"]));
-        this.services_time3.push(this.getDates(this.services[i]["REGISTER"]))
+        this.services_time1.push(this.getDates(this.services[i]["商业险日期"]));
+        this.services_time2.push(this.getDates(this.services[i]["交强险日期"]));
+        this.services_time3.push(this.getDates(this.services[i]["登记日期"]))
 //        console.log(this.CS)
       }
     },
@@ -427,6 +459,7 @@ export default {
       this.alter.checkboxModel.push(value);
       this.sendPostChangeSalesman()
     },
+    //变更业务员
     sendPostChangeSalesman(){
 //        console.log(this.alter.checkboxModel.length);
       if(this.alter.checkboxModel.length!==0){
@@ -437,6 +470,7 @@ export default {
           }
         }).then(function (response) {
           if(response.data.code.MessageCode===1001000){
+            this.ChangeSalesman();
             self.setData(self.url,self.items)
           }else {
             self.ErrorInfo(response.data.code.MsgInfo)
@@ -453,7 +487,7 @@ export default {
       this.errorInfo = msg;
       this.errorDis = true;
       let self = this;
-      setTimeout(self.EI,5000)
+      setTimeout(self.EI,3000)
     },
     EI(){
       this.errorDis = false
@@ -485,7 +519,7 @@ export default {
     setCurrent: function(idx) {
       if( this.tfoot.current !== idx && idx > 0 && idx < this.page + 1) {
         this.tfoot.current = idx;
-        this.getServerData(this.items,this.url);
+        this.setData(this.url,this.items)
       }
     },
     setDisData:function(){
@@ -744,6 +778,48 @@ span{
     height: 200px;
     border: 5px solid #737373;
     border-radius: 20px;
+  }
+
+  .alter{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: rgba(98, 96, 104, 0.6);
+  }
+.alterCustomer{
+  width: 1000px;
+  height: 600px;
+  border: 2px solid #00BFFF;
+  border-radius: 20px;
+  margin-left: 25%;
+  margin-top: 5%;
+  background-color: #F8F8FF;
+
+}
+.alterCustomer_title{
+  display: block;
+  margin-top: 10px;
+  font-size: 25px;
+  font-weight: 900;
+  font-family: "楷体";
+}
+  .alterCustomer_info{
+    width: 100%;
+    height: 500px;
+    margin-top: 10px;
+    background-color: #d9534f;
+  }
+  .btn_position{
+    margin-top: 10px;
+  }
+  .alter_tr{
+    font-size: 18px;
+    /*height: 20px;*/
+  }
+  .alter_td{
+    display: inline-block;
   }
 
 </style>
