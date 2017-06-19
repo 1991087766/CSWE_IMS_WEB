@@ -73,6 +73,7 @@ export default {
         this.setCookie("username",dataSource.access.username,2);
         this.setCookie("access_token",dataSource.access.access_token,2);
         this.setCookie("admin",dataSource.access.admin,2);
+        this.setCookie("NAME",dataSource.access.Name,2);
         this.$router.push('../Loading');
 
       }else{

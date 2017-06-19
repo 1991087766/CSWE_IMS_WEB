@@ -92,8 +92,12 @@
               <td style="width: 4%">{{services_time2[row["No."]-1]}}</td>
               <td style="width: 4%">{{services_time3[row["No."]-1]}}</td>
               <td>{{row["地址"]}}</td>
-              <td style="width: 4%">{{row["状态"]}}</td>
-              <td style="width: 12%"><button >编辑</button><button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['编号'])">删除</button><button @click="ChangeSalesman2(row['编号'])">更换业务员</button></td>
+              <td style="width: 4%">{{ZT[row["No."]-1]}}</td>
+              <td style="width: 12%">
+                <button >编辑</button>
+                <button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['编号'])">删除</button>
+                <button @click="ChangeSalesman2(row['编号'])">更换业务员</button>
+              </td>
             </tr>
           </tbody>
 
@@ -245,6 +249,7 @@ export default {
       CustomerService2:[],
       services:[],
       CS:[],
+      ZT:[],
       services_time1:[],
       services_time2:[],
       services_time3:[],
@@ -272,8 +277,9 @@ export default {
   mounted:function(){
     this.items.info.username = this.getCookie("username");
     this.items.info.access_token = this.getCookie("access_token");
-    this.sendGet("/getCustomerService?username="+this.items.info.username+"&access_token="+this.items.info.access_token);
-    this.setData(this.url,this.items)
+    let self = this;
+    setTimeout(self.setData(this.url,this.items),300);
+    setTimeout(self.sendGet("/getCustomerService?username="+this.items.info.username+"&access_token="+this.items.info.access_token),300);
   },
   watch: {
     'checkboxModel': {
@@ -418,6 +424,7 @@ export default {
             this.$store.commit("setErrorinfo","");
             this.services = dataSource.information;
             this.CS = [];
+            this.ZT = [];
             this.services_time1=[];
             this.services_time2=[];
             this.services_time3=[];
@@ -438,15 +445,21 @@ export default {
     getServicesDate(){
       for(let i = 0;this.services.length>i;i++){
         if (this.services[i]["客服"]==="null"||this.services[i]["客服"]==="客服"){
-          this.CS.push("")
+          this.CS.push("—")
         }else {
           this.CS.push(this.services[i]["客服"])
+        }
+        if (this.services[i]["状态"]==="null"){
+          this.ZT.push("未处理")
+        }else {
+          this.ZT.push(this.services[i]["状态"])
         }
         this.services_time1.push(this.getDates(this.services[i]["商业险日期"]));
         this.services_time2.push(this.getDates(this.services[i]["交强险日期"]));
         this.services_time3.push(this.getDates(this.services[i]["登记日期"]))
 //        console.log(this.CS)
       }
+
     },
     //变更业务员
     ChangeSalesman(){
@@ -454,15 +467,15 @@ export default {
     },
     //变更业务员
     ChangeSalesman2(value){
+
       this.CustomerServiceDis = !this.CustomerServiceDis;
       this.alter.checkboxModel=[];
       this.alter.checkboxModel.push(value);
-      this.sendPostChangeSalesman()
     },
     //变更业务员
     sendPostChangeSalesman(){
 //        console.log(this.alter.checkboxModel.length);
-      if(this.alter.checkboxModel.length!==0){
+      if(this.alter.checkboxModel.length!==0&&this.alter.CustomerService!=="客服"){
         let self = this;
         this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
           headers: {

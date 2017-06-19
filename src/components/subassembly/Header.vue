@@ -15,15 +15,39 @@ export default {
   name:"header",
   data(){
     return{
-      uName:null,
+      uName:"未登录",
       news:0
     }
   },
   created(){
-        this.uName=this.$store.state.uName
         this.news=this.$store.state.news
   },
+  mounted(){
+      if(this.$store.state.uName!==null&&this.$store.state.uName===this.getCookie("NAME")){
+        this.$store.commit("setUName",this.getCookie("NAME"));
+        this.uName=this.getCookie("NAME")
+      }else {
+        if(this.getCookie("NAME")!==null){
+          this.$store.commit("setUName",this.getCookie("NAME"));
+          this.uName=this.getCookie("NAME")
+        }else {
+          this.uName="未登录"
+        }
+      }
+
+
+  },
   methods:{
+    getCookie(cname) {
+      let name = cname + "=";
+      let ca = document.cookie.split(';');
+      for(let i=0; i<ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0)===' ') c = c.substring(1);
+        if (c.indexOf(name) !== -1) return c.substring(name.length, c.length);
+      }
+      return null;
+    },
     devices:function(){
       this.$router.push('./Setting')
     }

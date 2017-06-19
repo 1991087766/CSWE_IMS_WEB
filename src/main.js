@@ -44,7 +44,7 @@ const store = new Vuex.Store({
 
       //用户信息
       uImgurl: null,//用户头像url
-      uName:"用户名",//用户姓名
+      uName:null,//用户姓名
       uNumber:null,//用户编号
       uMail:null,//用户邮箱
       uGender:null,//用户性别

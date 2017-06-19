@@ -54,7 +54,9 @@ export default {
         this.setCookie("username",dataSource.access.username,7);
         this.setCookie("access_token",dataSource.access.access_token,7);
         this.setCookie("admin",dataSource.access.admin,7);
+
         this.$router.push('../home/CustomerMA')
+
       }else{
         this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);
         this.$router.push('../login');

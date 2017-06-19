@@ -251,7 +251,9 @@
           }else if(this.AddInfo.search.Phone===null){
             this.adderror = "请填写正确的手机号！"
           }else{
-            this.sendPost("/addUserInfo",this.AddInfo)
+            this.AddInfo.info.username =  this.getCookie("username");
+            this.AddInfo.info.access_token = this.getCookie("access_token");
+            this.sendPost("/addAccount",this.AddInfo)
           }
       },
 
@@ -309,7 +311,10 @@
       },
       //处理数据
       analysis(dataSource){
-        if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1002005){
+        if(dataSource.code.MessageCode===1001000
+          ||dataSource.code.MessageCode===1002005
+          ||dataSource.code.MessageCode===1002006
+        ){
           if(dataSource.code.MessageCode===1001000){
             this.$store.commit("setErrorinfo","");
             this.services = dataSource.information;
