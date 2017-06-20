@@ -168,7 +168,7 @@
             <tbody>
             <tr class="alter_tr">
               <td >
-                :<input class="" type="text"  placeholder="车牌、手机号、客户名、车架号、发动机号">
+                1:<input class="" type="text"  placeholder="">
               </td>
             </tr>
             </tbody>
