@@ -24,28 +24,34 @@
         <table class="table">
           <thead>
           <tr class="tr_title">
-            <td>标记</td>
-            <td>姓名</td>
-            <td>部门</td>
-            <td>管理</td>
-            <td>状态</td>
-            <td style="width: 4%">入职日期</td>
-            <td style="width: 4%">离职日期</td>
+            <td style="width: 7%">标记</td>
+            <td style="width: 5%">姓名</td>
+            <td style="width: 7%">账号</td>
+            <td style="width: 7%">手机</td>
+            <td style="width: 9%">邮件</td>
+            <td style="width: 5%">部门</td>
+            <td style="width: 5%">管理</td>
+            <td style="width: 5%">状态</td>
+            <td style="width: 7%">入职日期</td>
+            <td style="width: 7%">离职日期</td>
             <td>地址</td>
-            <td style="width: 12%" class="td_option">选项</td>
+            <td style="width: 8%" class="td_option">选项</td>
           </tr>
           </thead>
           <tbody class="tbody">
           <tr class="tbody_tr" v-for="row in services">
-            <td style="width: 12%">{{row["编号"]}}</td>
-            <td style="width: 8%">{{row["姓名"]}}</td>
-            <td style="width: 8%">{{row["部门"]}}</td>
-            <td style="width: 8%">{{row["管理"]}}</td>
-            <td style="width: 8%">{{row["状态"]}}</td>
-            <td style="width: 8%">{{row["入职时间"]}}</td>
-            <td style="width: 8%">{{row["离职时间"]}}</td>
+            <td>{{row["编号"]}}</td>
+            <td>{{row["姓名"]}}</td>
+            <td>{{row["账号"]}}</td>
+            <td>{{row["手机"]}}</td>
+            <td>{{row["邮件"]}}</td>
+            <td>{{row["部门"]}}</td>
+            <td>{{row["管理"]}}</td>
+            <td>{{row["状态"]}}</td>
+            <td>{{getDates(row["入职时间"])}}</td>
+            <td>{{row["离职时间"]}}</td>
             <td >{{row["地址"]}}</td>
-            <td style="width: 8%"><button class="btn1 btn" @click="qSettings(row['编号'])">设置</button></td>
+            <td><button class="btn1 btn" @click="qSettings(row['编号'])">设置</button></td>
           </tr>
           </tbody>
 
@@ -213,7 +219,7 @@
             access_token: null
           }
         },
-        settingerror:"123",
+        settingerror:"",
         CustomerService:[],
         services:[],
         tfoot:{
@@ -259,6 +265,7 @@
 
       qSettings(value){
         this.setting.search.SearchNumber=value;
+        this.settingerror="";
         this.willShow = !this.willShow
       },
       settingPost(){
@@ -360,9 +367,25 @@
         return "";
       },
       getDates(value){
-        let newDate = new Date();
-        newDate.setTime(value * 1000);
-        return newDate.toLocaleDateString();
+        if(value!=="—"){
+          let newDate = new Date();
+          newDate.setTime(value);
+          let ndm ;
+          if(newDate.getMonth()+1<10){
+            ndm= '-0'+(newDate.getMonth()+1)
+          }else {
+            ndm= '-'+(newDate.getMonth()+1)
+          }
+          let ndd ;
+          if(newDate.getDate()<10){
+            ndd= '-0'+newDate.getDate()
+          }else {
+            ndd= '-'+newDate.getDate()
+          }
+          return newDate.getFullYear()+ndm+ndd;
+        }else {
+            return "—"
+        }
       },
       getTimeStamp(value){
         return new Date(value+" 12:0:0").getTime()/1000
@@ -460,7 +483,7 @@
 
   .table{
     width: 100%;
-    height: 100%;
+    height: auto;
     border-collapse:collapse;
 
   }
@@ -514,8 +537,16 @@
   }
   .input_{
     width: 260px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
   }
-
+.select1{
+  font-size: 15px;
+  font-family: 楷体;
+  border: 2px solid #CDC9C9;
+  border-radius: 5px;
+}
   .tbody_tr{
     font-size: 10px;
   }
@@ -667,8 +698,9 @@
   .select_alter{
     width: 190px;
     font-size: 18px;
-    border: 2px solid #8492a6;
-    border-radius: 4px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
     /*height: 20px;*/
   }
   .select_alter_add{

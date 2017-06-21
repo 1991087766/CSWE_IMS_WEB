@@ -4,18 +4,24 @@
     <div id="staffManagementcon">
       <div id="HeadPortrait">
         <img id="HeadPortraitImg"src="../../assets/logo.png"/>
-        <div id="HeadPortraitBtn">
-          <span>此处添加按钮和说明</span>
-        </div>
+        <!--<div id="HeadPortraitBtn">-->
+          <!--<span>此处添加按钮和说明</span>-->
+        <!--</div>-->
       </div>
       <div id="staffInfo">
-          <span>姓　　名：</span><span id="username">{{info.uName}}</span><br>
-          <span>性　　别：</span><span id="username">{{info.uGender}}</span><br>
-          <span>员工编号：</span><span id="username">{{info.uNumber}}</span><br>
-          <span>部　　门：</span><span id="username">{{info.uDepartment}}</span><br>
-          <span>办公地点：</span><span id="username">{{info.uPlace}}</span><br>
-          <span>手机号码：</span><span id="username">{{info.uPhone}}</span><br>
-          <span>公司邮箱：</span><span id="username">{{info.uMail}}</span><br>
+          <span class="staffInfo_span">姓　名：</span><span class="span_info">{{info.姓名}}</span><br>
+          <span class="staffInfo_span">性　别：</span><span class="span_info">{{info.性别}}</span><br>
+          <span class="staffInfo_span">编　号：</span><span class="span_info">{{info.编号}}</span><br>
+          <span class="staffInfo_span">部　门：</span><span class="span_info">{{info.部门}}</span><br>
+          <span class="staffInfo_span">管　理：</span><span class="span_info">{{info.管理}}</span><br>
+          <span class="staffInfo_span">手　机：</span><span class="span_info">{{info.手机}}</span><br>
+          <span class="staffInfo_span">邮　箱：</span><span class="span_info">{{info.邮箱}}</span><br>
+          <span class="staffInfo_span">地　址：</span><span class="span_info">{{info.地址}}</span>
+      </div>
+      <div id="setInfo">
+        <input class="btn btn2" type="button"  value="修改秘密" >
+        <input class="btn " type="button"  value="修改资料" >
+        <input class="btn btn1" type="button"  value="退出账号" >
       </div>
     </div>
   </div>
@@ -27,97 +33,108 @@ export default {
   data(){
     return{
       item:{
-        data:{
+        search:{
+          地址:null,
+          手机:null,
+          邮箱:null
+        },
+
+        info:{
           username: null,
           access_token: null
         }
+
+      },
+      pwd:{
+        search:{
+          assect:null
+        },
+        info:{
+          info:{
+            username: null,
+            access_token: null
+          }
+        }
+
       },
       info:{
-        uImgurl: null,//用户头像url
-        uName:null,//用户姓名
-        uNumber:null,//用户编号
-        uMail:null,//用户邮箱
-        uGender:null,//用户xingbie
-        uDepartment:null,//用户部门
-        uPlace:null,//办公地点
+        姓名:null,//用户姓名
+        性别:null,//用户编号
+        编号:null,//用户邮箱
+        部门:null,//用户xingbie
+        管理:null,//用户部门
+        手机:null,
+        邮箱:null,
+        地址:null//办公地点
       },
-      url:"/setting"
+      url:"/getIndividual",
+
+      errorInfo:false,
+      errorDis:""
     }
 
   },
   created(){
-    // this.sendLogin();
+
   },
   methods:{
-    setParameter:function(){
-      this.info.uImgurl=this.$store.state.uImgurl
-      this.info.uName=this.$store.state.uName
-      this.info.uNumber=this.$store.state.uNumber
-      this.info.uMail=this.$store.state.uMail
-      this.info.uGender=this.$store.state.uGender
-      this.info.uDepartment=this.$store.state.uDepartment
-      this.info.uPlace=this.$store.state.uPlace
-      this.info.uPhone=this.$store.state.uPhone
+    setParameter(){
+      this.info.姓名=this.$store.state.uImgurl
+      this.info.性别=this.$store.state.uName
+      this.info.编号=this.$store.state.uNumber
+      this.info.部门=this.$store.state.uMail
+      this.info.管理=this.$store.state.uGender
+      this.info.手机=this.$store.state.uDepartment
+      this.info.邮箱=this.$store.state.uPlace
+      this.info.地址=this.$store.state.uPhone
     },
-    sendLogin: function(){
-      var self = this
-      var JSONitem = JSON.stringify(self.item)
-      var xmlHttpRequest =self.createXmlHttpRequest()
-      xmlHttpRequest.open("POST",encodeURI(self.$store.state.url+self.url),true)
-      xmlHttpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-      xmlHttpRequest.onreadystatechange=function(){
-        if (xmlHttpRequest.readyState===4 && xmlHttpRequest.status===200){
-          var json = eval("("+xmlHttpRequest.responseText+")")
-          if(Boolean(json["status"])===true
-            && json["username"]!==self.$store.state.username
-            && json["access_token"]!==self.$store.state.access_token
-          ){
-            self.$store.commit('setStatus',json["status"])
-            self.$store.commit('setUsername',json["username"])
-            self.$store.commit('setAccess_token',json["access_token"])
-            self.$store.commit('setAdmin',json["admin"])
-            self.$store.commit('setReason',json["reason"])
+    sendPost(url,sendData){
+      let self = this;
+//      console.log("sendPost");
+      this.$ajax.post(self.$store.state.url+url, sendData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then(function (response) {
+        self.analysis(response.data);
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    analysis(dataSource){
+      if(dataSource.code.MessageCode===1001000
+        ||dataSource.code.MessageCode===1002005
+        ||dataSource.code.MessageCode===1002006
+      ){
+        if(dataSource.code.MessageCode===1001000){
+          this.$store.commit("setErrorinfo","");
+          this.services = dataSource.information;
+          this.CS = [];
+          this.tfoot.total = dataSource.pages.total;
+        }else {
+          this.addInfo=false;
+          this.setData(this.url,this.items)
+        }
 
-            self.$store.commit('setUImgurl',json["uImgurl"])
-            self.$store.commit('setUName',json["uName"])
-            self.$store.commit('setUNumber',json["uNumber"])
-            self.$store.commit('setUMail',json["uMail"])
-            self.$store.commit('setUGender',json["uGender"])
-            self.$store.commit('setUDepartment',json["uDepartment"])
-            self.$store.commit('setUPlace',json["uPlace"])
-            self.$store.commit('setUPhone',json["uPhone"])
-            self.setParameter()
-          }else{
-            self.$router.push('../login')
-          }
-        }else{
-          self.$router.push('../login')
-        }
+      }else if (dataSource.code.MessageCode===1003002){
+        this.addInfo = dataSource.code.MsgInfo
+      }else if(dataSource.code.MessageCode===1003001){
+        this.ErrorInfo(dataSource.code.MsgInfo)
+      }else{
+        this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);
+        this.$router.push('../login');
       }
-      xmlHttpRequest.send(encodeURI(JSONitem))
     },
-    signout: function(){
-      var self = this
-      self.username=self.$store.state.username
-      self.access_token=self.$store.state.access_token
-      var JSONitem = JSON.stringify(self.item)
-      var xmlHttpRequest = self.createXmlHttpRequest()
-      xmlHttpRequest.open("POST",encodeURI(self.$store.state.url+self.url),true)
-      xmlHttpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-      xmlHttpRequest.onreadystatechange=function(){
-        if (xmlHttpRequest.readyState==4 && xmlHttpRequest.status==200){
-          self.$router.push('../login')
-        }
-      }
-      xmlHttpRequest.send(encodeURI(JSONitem))
+    ErrorInfo(msg){
+      this.errorInfo = msg;
+      this.errorDis = true;
+      let self = this;
+      setTimeout(self.EI,3000)
     },
-    createXmlHttpRequest:function(){
-        if(window.ActiveXObject){ //如果是IE浏览器
-          return new ActiveXObject("Microsoft.XMLHTTP");
-        }else if(window.XMLHttpRequest){ //非IE浏览器
-          return new XMLHttpRequest()
-      }
+    EI(){
+      this.errorDis = false
     }
+
   }
 }
 </script>
@@ -152,7 +169,7 @@ export default {
 }
 #HeadPortrait{
   width: 100%;
-  height: 200px;
+  height: 130px;
   text-align:left;
   position: absolute;
 }
@@ -160,8 +177,8 @@ export default {
   float: left;
   border-radius:50%;
   background-color: rgb(25, 145, 236);
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-collapse: collapse;
   border:2px solid #778899;
 }
@@ -170,44 +187,65 @@ export default {
   margin-left: 200px;
 }
 #staffInfo{
-  width: 100%;
+  width: 60%;
   height: auto;
-  top: 200px;
+  top: 140px;
   text-align:left;
-  font-family: "STKaiti";
   font-weight: bold;
   font-size: 25px;
   line-height: 40px;
   color: 	#858585;
   position: absolute;
 }
+.staffInfo_span{
+  margin-top: 5px;
+  text-align: center;
+  width: 150px;
+  height: 30px;
+  font-size: 20px;
+  font-family: 楷体;
+  color: #000000;
+  border-radius: 15px;
+  border: 1px solid #000000;
+  position: absolute;
+  background-color: #EEE9E9;
+}
 textarea{
   font-size: 18px;
   margin-left: 50px;
 }
-thead{
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 40;
-  text-align:center;
-  background-color: #4EEE94;
-}
-td{
-  word-break: break-all;
-  min-width: auto;
-  height: 30px;
-  border:2px solid #778899;
-}
-tbody{
+#setInfo{
 
+  width: 100%;
+  margin-top: 475px;
 }
-tfoot{
-  /*position: fixed;
-  bottom: 20px;*/
+.span_info{
+  margin-left: 160px;
 }
-.tfoot_td{
+.btn{
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #20a0ff;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  padding: 7px 9px;
+  font-size: 15px;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #20a0ff;
+  width: 100px;
   height: 40px;
+  margin-right: 20px;
+}
+  .btn1{
+    background-color: #080808;
+  }
+.btn2{
+  background-color: #ec971f;
 }
 
 </style>

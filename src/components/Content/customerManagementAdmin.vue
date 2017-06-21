@@ -40,12 +40,13 @@
             暂未绑定业务员
             <input class="btn1" type="button" @click="setData(url,items)" value="查 询" >
             <input class="btn1" type="button" @click="ChangeSalesman" value="变更业务员" >
+            <input class="btn1" type="button"  v-if="!delInfo.del&&!delInfo.dellist"  @click="delInfoList" value="批量删除" >
             <!--<input class="btn1" type="button" value="新增客户" >-->
             <vue-xlsx-table @on-select-file="handleSelectedFile" class="xlsx" >
               信 息 导 入
             </vue-xlsx-table>
 
-            <input class="btn1" type="button"  v-if="!delInfo.del&&!delInfo.dellist"  @click="delInfoList" value="批量删除" >
+
           </td>
         </tr>
 
@@ -78,12 +79,12 @@
           <tbody class="tbody">
             <tr class="tbody_tr" v-for="row in services">
               <td style="width: 2%"><input type="checkbox"  id="row['编号']" @click='checkSingle(row["编号"])'  /></td>
-              <td style="width: 4%">{{CS[row["No."]-1]}}</td>
+              <td style="width: 3%">{{CS[row["No."]-1]}}</td>
               <td style="width: 4%">{{row["车牌号"]}}</td>
               <td style="width: 6%">{{row["车架号"]}}</td>
               <td style="width: 7%">{{row["客户名称"]}}</td>
-              <td style="width: 6%">{{row["品牌"]}}</td>
-              <td style="width: 7%">{{row["车型号"]}}</td>
+              <td style="width: 5%">{{row["品牌"]}}</td>
+              <td style="width: 6%">{{row["车型号"]}}</td>
               <td style="width: 7%">{{row["发动机号"]}}</td>
               <td style="width: 5%">{{row["手机"]}}</td>
               <td style="width: 8%">{{row["身份证号"]}}</td>
@@ -230,11 +231,11 @@
             </tbody>
           </table>
         </div>
-        <input class="alter_tr_btns alter_tr_btns_1" type="button" value="成功" >
-        <input class="alter_tr_btns alter_tr_btns_2" type="button" value="预约" >
-        <input class="alter_tr_btns alter_tr_btns_3" type="button" value="失败" >
-        <input class="alter_tr_btns alter_tr_btns_4" type="button" value="无效" >
-        <span>{{text111}}</span>
+        <span style="font-size: 20px">{{errorInfo}}</span><br>
+        <input class="alter_tr_btns alter_tr_btns_1" type="button" @click="sendStartCustomer('成功')" value="成功" >
+        <input class="alter_tr_btns alter_tr_btns_2" type="button" @click="sendStartCustomer('预约')" value="预约" >
+        <input class="alter_tr_btns alter_tr_btns_3" type="button" @click="sendStartCustomer('失败')" value="失败" >
+        <input class="alter_tr_btns alter_tr_btns_4" type="button" @click="sendStartCustomer('无效')" value="无效" >
         <input class="alter_tr_btns alter_tr_btns_5" type="button" @click="setAfterCustomerDis()" value="取消" >
 
 
@@ -309,6 +310,16 @@ export default {
         }
 
       },
+      afterCustomerStart:{
+        info:{
+          username: null,//账号
+          access_token: null
+        },
+        search:{
+          编号:null,
+          状态:""
+        }
+      },
       alter:{
         checkboxModel:[],//获取选项框数据
         CustomerService:"客服",
@@ -359,8 +370,8 @@ export default {
         startDate:"",
         endDate:""
       },
-      errorInfo:false,
-      errorDis:"",
+      errorInfo:"",
+      errorDis:false,
       text111:null
     }
   },
@@ -417,14 +428,23 @@ export default {
       this.afterCustomer.search.备注 = value["备注"];
       this.afterCustomer.search.状态 = value["状态"];
       this.afterCustomer.search.客服 = value["客服"];
+
+      this.afterCustomerStart.search.编号 = value["编号"];
     },
     setAfterCustomerDis(){
-      this.AfterCustomerDis = !this.AfterCustomerDis
+      this.AfterCustomerDis = !this.AfterCustomerDis;
+      this.errorInfo=""
     },
     SendAfterCustomer(){
       this.afterCustomer.info.username=this.getCookie("username");
       this.afterCustomer.info.access_token=this.getCookie("access_token");
       this.sendPost("/setAfterCustomer",this.afterCustomer)
+    },
+    sendStartCustomer(value){
+      this.afterCustomerStart.info.username=this.getCookie("username");
+      this.afterCustomerStart.info.access_token=this.getCookie("access_token");
+      this.afterCustomerStart.search.状态 = value;
+      this.sendPost("/setStartCustomer",this.afterCustomerStart)
     },
 
 
@@ -525,7 +545,6 @@ export default {
     //发送数据
     sendPost(url,sendData){
       let self = this;
-//      console.log("sendPost");
       this.$ajax.post(self.$store.state.url+url, sendData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -552,7 +571,7 @@ export default {
     },
     //处理数据
     analysis(dataSource){
-      if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1003000||dataSource.code.MessageCode===1002000){
+      if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1003000||dataSource.code.MessageCode===1002000||dataSource.code.MessageCode===1002005){
           if(dataSource.code.MessageCode===1001000){
             this.$store.commit("setErrorinfo","");
             this.services = dataSource.information;
@@ -566,9 +585,12 @@ export default {
           }else if(dataSource.code.MessageCode===1003000||dataSource.code.MessageCode===1002000){
             this.delInfodel();
             this.setData(this.url,this.items)
+          }else if(dataSource.code.MessageCode===1002005){
+            this.errorInfo=dataSource.code.MsgInfo;
+            this.setData(this.url,this.items)
           }
 
-      }else if(dataSource.code.MessageCode===1003001){
+      }else if(dataSource.code.MessageCode===1003001||dataSource.code.MessageCode===1002002){
         this.ErrorInfo(dataSource.code.MsgInfo)
       }else{
         this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);
@@ -607,7 +629,6 @@ export default {
     },
     //变更业务员
     sendPostChangeSalesman(){
-//        console.log(this.alter.checkboxModel.length);
       if(this.alter.checkboxModel.length!==0&&this.alter.CustomerService!=="客服"){
         let self = this;
         this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
@@ -615,8 +636,9 @@ export default {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         }).then(function (response) {
-          if(response.data.code.MessageCode===1001000){
-            this.ChangeSalesman();
+          if(response.data.code.MessageCode===1001000||response.data.code.MessageCode===1002005){
+            self.ChangeSalesman();
+
             self.setData(self.url,self.items)
           }else {
             self.ErrorInfo(response.data.code.MsgInfo)
@@ -774,7 +796,7 @@ table {
 
 .table{
   width: 100%;
-  height: 100%;
+  height: auto;
   border-collapse:collapse;
 
 }
@@ -903,7 +925,7 @@ span{
   outline: 0;
   margin: 0;
   padding: 7px 9px;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 4px;
   color: #fff;
   background-color: #20a0ff;
@@ -942,7 +964,7 @@ span{
   }
 .alterCustomer{
   width: 1000px;
-  height: 410px;
+  height: 450px;
   border: 2px solid #00BFFF;
   border-radius: 20px;
   margin-left: 25%;
@@ -990,7 +1012,7 @@ input{
   height: 100%;
   color: #FFFFFF;
   font-size: 20px;
-  font-family: "楷体";
+  font-family: 楷体;
   font-weight: 900;
   border: 1px solid #23527c;
   background-color: #FF3030;
@@ -1006,6 +1028,7 @@ input{
   border-radius: 5px;
 }
 select{
+  width: 100px;
   font-weight: 500;
   font-size: 14px;
   font-family: 楷体;
@@ -1045,6 +1068,7 @@ select{
   color: #fff;
   width: 100px;
   height: 50px;
+  margin-top: 10px;
 }
 .alter_tr_btns_1{
   background-color: #FFB90F;
@@ -1069,7 +1093,7 @@ select{
   height: 35px;
   font-size: 15px;
   float: right;
-  margin-top: 15px;
+  margin-top: 25px;
   margin-right: 15px;
 }
 .alter_input_date{
