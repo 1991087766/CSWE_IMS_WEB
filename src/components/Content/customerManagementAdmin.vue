@@ -160,7 +160,6 @@
         <span>{{errorInfo}}</span>
       </div>
     </div>
-    <AddCustomer v-if="false"></AddCustomer>
     <div class="alter" v-if="AfterCustomerDis">
       <div class="alterCustomer">
         <span class="alterCustomer_title ">修改客户信息</span>
@@ -245,13 +244,9 @@
 </template>
 
 <script >
-  import AddCustomer from "./addCustomer"
 
 export default {
-   name:"customerManagementAdmin",
-  components: {
-    AddCustomer
-  },
+  name:"customerManagementAdmin",
   data() {
     return{
       items:{

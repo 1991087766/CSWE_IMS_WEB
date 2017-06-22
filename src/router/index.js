@@ -15,7 +15,6 @@ import StaffManagement from '@/components/Content/staffManagement.vue'
 import Setting from '@/components/Content/Setting.vue'
 import News from '@/components/Content/news.vue'
 import Xlsx from '@/components/Content/xlsx.vue'
-import sm from '@/components/Content/SM.vue'
 
 Vue.use(Router)
 
@@ -90,11 +89,6 @@ export default new Router({
           path: 'Xlsx',
           name: 'Xlsx',
           component: Xlsx
-        },
-        {
-          path: 'sm',
-          name: 'sm',
-          component: sm
         }
       ]
     }

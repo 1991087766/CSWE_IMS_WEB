@@ -169,12 +169,8 @@
 </template>
 
 <script type="text/javascript">
-  import AddCustomer from "./addCustomer"
   export default {
     name: "StaffManagement",
-    components: {
-      AddCustomer
-    },
     data() {
       return{
         items:{
