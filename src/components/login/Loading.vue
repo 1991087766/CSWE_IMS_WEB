@@ -35,17 +35,22 @@ export default {
     },
     //发送数据
     sendPost(){
-      let self = this;
-      console.log("sendPost");
-      this.$ajax.post(self.$store.state.url+self.url, self.items, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+        if(this.getCookie("access_token")){
+          let self = this;
+          this.$ajax.post(self.$store.state.url+self.url, self.items, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(function (response) {
+            self.analysis(response.data);
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }else {
+          this.$store.commit("setErrorinfo","登陆失败，请重试！");
+          this.$router.push('../login');
         }
-      }).then(function (response) {
-        self.analysis(response.data);
-      }).catch(function (error) {
-        console.log(error);
-      });
+
     },
     //处理数据
     analysis(dataSource){

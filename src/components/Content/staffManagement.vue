@@ -292,29 +292,37 @@
       },
       //发送数据
       sendPost(url,sendData){
-        let self = this;
-//      console.log("sendPost");
-        this.$ajax.post(self.$store.state.url+url, sendData, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+          if(this.getCookie("access_token")){
+            let self = this;
+            this.$ajax.post(self.$store.state.url+url, sendData, {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }).then(function (response) {
+              self.analysis(response.data);
+            }).catch(function (error) {
+              console.log(error);
+            });
+          }else {
+            this.$router.push('../login');
           }
-        }).then(function (response) {
-          self.analysis(response.data);
-        }).catch(function (error) {
-          console.log(error);
-        });
+
       },
       sendGet(url){
-        let self = this;
-        this.$ajax.get(self.$store.state.url+url, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+          if(this.getCookie("access_token")){
+            let self = this;
+            this.$ajax.get(self.$store.state.url+url, {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }).then(function (response) {
+              self.CustomerService=response.data.information
+            }).catch(function (error) {
+              console.log(error);
+            });
+          }else {
+            this.$router.push('../login');
           }
-        }).then(function (response) {
-          self.CustomerService=response.data.information
-        }).catch(function (error) {
-          console.log(error);
-        });
       },
       //处理数据
       analysis(dataSource){

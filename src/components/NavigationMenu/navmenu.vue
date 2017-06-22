@@ -2,7 +2,7 @@
   <div id="navmenu">
     <div id="menu">
       <div id="myPage"class="btn">
-        <router-link to="/home/news"  tag="span" active-class="active">
+        <router-link to="/mypage"  tag="span" active-class="active">
           我 的 页 面
         </router-link>
       </div>
@@ -17,7 +17,7 @@
 
       <div id="Other" class="Other">
         <ul class="Others" >
-          <router-link to="/home/Setting" tag="li" active-class="active">
+          <router-link to="/Setting" tag="li" active-class="active">
               个 人 中 心
           </router-link>
           <router-link v-for="name in others" :to="{path:name.path}" tag="li" active-class="active3" v-if="getAdmin">
@@ -30,7 +30,6 @@
 </template>
 
 <script type="text/javascript">
-//import NavMenuSalesmanAdmin from '../NavigationMenu/navmenu_admin.vue'
 export default {
   name:"navmenu",
   data(){
@@ -39,29 +38,29 @@ export default {
       products:[
         {
           name:'山 东',
-          path:'/home/CustomerMsd',
+          path:'/CustomerMsd',
           active:false
         },
         {
           name:'苏 州',
-          path:'/home/CustomerMsz',
+          path:'/CustomerMsz',
           active:false
         },
         {
           name:'无 锡',
-          path:'/home/CustomerMwx',
+          path:'/CustomerMwx',
           active:false
         }
       ],
       others:[
         {
           name:'客 户 管 理',
-          path:'/home/CustomerMA',
+          path:'/CustomerMA',
           active:false
         },
         {
           name:'部 门 管 理',
-          path:'/home/StaffManagement',
+          path:'/StaffManagement',
           active:false
 //        },
 //        {

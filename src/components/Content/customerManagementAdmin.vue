@@ -544,30 +544,36 @@ export default {
     },
     //发送数据
     sendPost(url,sendData){
-      let self = this;
-      this.$ajax.post(self.$store.state.url+url, sendData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).then(function (response) {
-        self.analysis(response.data);
-      }).catch(function (error) {
-        console.log(error);
-      });
+      if(this.getCookie("access_token")){
+        let self = this;
+        this.$ajax.post(self.$store.state.url+url, sendData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(function (response) {
+          self.analysis(response.data);
+        }).catch(function (error) {
+          console.log(error);
+        });
+      }else {
+        this.$router.push('../login');
+      }
     },
     sendGet(url){
-      let self = this;
-//      console.log("sendPost");
-      this.$ajax.get(self.$store.state.url+url, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).then(function (response) {
+      if(this.getCookie("access_token")){
+        let self = this;
+        this.$ajax.get(self.$store.state.url+url, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(function (response) {
           self.CustomerService=response.data.information
-//        self.analysis(response.data);
-      }).catch(function (error) {
-        console.log(error);
-      });
+        }).catch(function (error) {
+          console.log(error);
+        });
+      }else {
+        this.$router.push('../login');
+      }
     },
     //处理数据
     analysis(dataSource){
@@ -629,26 +635,30 @@ export default {
     },
     //变更业务员
     sendPostChangeSalesman(){
-      if(this.alter.checkboxModel.length!==0&&this.alter.CustomerService!=="客服"){
-        let self = this;
-        this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }).then(function (response) {
-          if(response.data.code.MessageCode===1001000||response.data.code.MessageCode===1002005){
-            self.ChangeSalesman();
+      if(this.getCookie("access_token")){
+        if(this.alter.checkboxModel.length!==0&&this.alter.CustomerService!=="客服"){
+          let self = this;
+          this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(function (response) {
+            if(response.data.code.MessageCode===1001000||response.data.code.MessageCode===1002005){
+              self.ChangeSalesman();
 
-            self.setData(self.url,self.items)
-          }else {
-            self.ErrorInfo(response.data.code.MsgInfo)
-          }
-        }).catch(function (error) {
-          console.log(error);
-        });
-      }else{
-        this.ChangeSalesman();
-        this.ErrorInfo("请选择要变更的数据！")
+              self.setData(self.url,self.items)
+            }else {
+              self.ErrorInfo(response.data.code.MsgInfo)
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }else{
+          this.ChangeSalesman();
+          this.ErrorInfo("请选择要变更的数据！")
+        }
+      }else {
+        this.$router.push('../login');
       }
     },
     ErrorInfo(msg){

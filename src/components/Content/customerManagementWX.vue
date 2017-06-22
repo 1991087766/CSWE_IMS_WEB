@@ -1,6 +1,6 @@
 <template>
 
-  <div id="customerManagementWX">
+  <div id="customerManagementWX" >
     <div class="Title"><span class="Title_">客户管理 - 无锡</span></div>
     <div class="Table">
       <table class="table_">
@@ -41,11 +41,8 @@
             <input class="btn1" type="button" @click="setData(url,items)" value="查 询" >
             <input class="btn1" type="button" @click="ChangeSalesman" value="变更业务员" >
             <!--<input class="btn1" type="button" value="新增客户" >-->
-            <vue-xlsx-table @on-select-file="handleSelectedFile" class="xlsx" >
-              信 息 导 入
-            </vue-xlsx-table>
 
-            <input class="btn1" type="button"  v-if="!delInfo.del&&!delInfo.dellist"  @click="delInfoList" value="批量删除" >
+
           </td>
         </tr>
 
@@ -58,18 +55,18 @@
             <td style="width: 2%" class="td_title"><label>
               <input type="checkbox" v-model="checkAll" @click="checkedAll()"/>
             </label></td>
-            <td style="width: 4%" class="td_CustomerService">客服</td>
+            <td style="width: 3%" class="td_CustomerService">客服</td>
             <td style="width: 4%" class="td_LicensePlate">车牌号</td>
             <td style="width: 6%">车架号</td>
             <td style="width: 7%">客户名称</td>
             <td style="width: 6%">品牌</td>
-            <td style="width: 7%">车型号</td>
+            <td style="width: 6%">车型号</td>
             <td style="width: 7%">发动机号</td>
             <td style="width: 5%" class="td_phone">手机</td>
             <td style="width: 8%">身份证号</td>
-            <td style="width: 4%">商业险日期</td>
-            <td style="width: 4%">交强险日期</td>
-            <td style="width: 4%">登记日期</td>
+            <td style="width: 5%">商业险日期</td>
+            <td style="width: 5%">交强险日期</td>
+            <td style="width: 5%">登记日期</td>
             <td>地址</td>
             <td style="width: 4%" class="td_status">状态</td>
             <td style="width: 12%" class="td_option">选项</td>
@@ -78,12 +75,12 @@
           <tbody class="tbody">
           <tr class="tbody_tr" v-for="row in services">
             <td style="width: 2%"><input type="checkbox"  id="row['编号']" @click='checkSingle(row["编号"])'  /></td>
-            <td style="width: 4%">{{CS[row["No."]-1]}}</td>
+            <td style="width: 3%">{{CS[row["No."]-1]}}</td>
             <td style="width: 4%">{{row["车牌号"]}}</td>
             <td style="width: 6%">{{row["车架号"]}}</td>
             <td style="width: 7%">{{row["客户名称"]}}</td>
-            <td style="width: 6%">{{row["品牌"]}}</td>
-            <td style="width: 7%">{{row["车型号"]}}</td>
+            <td style="width: 5%">{{row["品牌"]}}</td>
+            <td style="width: 6%">{{row["车型号"]}}</td>
             <td style="width: 7%">{{row["发动机号"]}}</td>
             <td style="width: 5%">{{row["手机"]}}</td>
             <td style="width: 8%">{{row["身份证号"]}}</td>
@@ -92,8 +89,12 @@
             <td style="width: 4%">{{services_time2[row["No."]-1]}}</td>
             <td style="width: 4%">{{services_time3[row["No."]-1]}}</td>
             <td>{{row["地址"]}}</td>
-            <td style="width: 4%">{{row["状态"]}}</td>
-            <td style="width: 12%"><button >编辑</button><button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['编号'])">删除</button><button @click="ChangeSalesman2(row['编号'])">更换业务员</button></td>
+            <td style="width: 4%">{{ZT[row["No."]-1]}}</td>
+            <td style="width: 12%">
+              <button @click="setAfterCustomer(row)">编辑</button>
+              <button v-if="!delInfo.del&&!delInfo.dellist" @click="delInfoData(row['编号'])">删除</button>
+              <button @click="ChangeSalesman2(row['编号'])">更换业务员</button>
+            </td>
           </tr>
           </tbody>
 
@@ -156,34 +157,94 @@
       </div>
     </div>
     <AddCustomer v-if="false"></AddCustomer>
-    <div class="alter" v-if="false">
+    <div class="alter" v-if="AfterCustomerDis">
       <div class="alterCustomer">
         <span class="alterCustomer_title ">修改客户信息</span>
         <div class="alterCustomer_info">
-          <table >
+          <table class="alter_table" >
             <tbody>
             <tr class="alter_tr">
-              <td >
-                :<input class="" type="text"  placeholder="车牌、手机号、客户名、车架号、发动机号">
-              </td>
+              <td style="width: 12%"><span class="alter_text">客户名</span></td>
+              <td style="width: 17%"><span class="alter_text">{{afterCustomer.search.客户名称}}</span></td>
+              <td style="width: 12%"><span class="alter_text">车牌号</span></td>
+              <td style="width: 17%"><span class="alter_text">{{afterCustomer.search.车牌号}}</span></td>
+              <td style="width: 12%"><span class="alter_text">车架号</span></td>
+              <td ><span class="alter_text">{{afterCustomer.search.车架号}}</span></td>
+            </tr>
+            <tr class="alter_tr">
+              <td><span class="alter_text">品牌</span></td>
+              <td ><input class="alter_input" type="text" v-model="afterCustomer.search.品牌"/></td>
+              <td><span class="alter_text">车型号</span></td>
+              <td ><span class="alter_text">{{afterCustomer.search.车型号}}</span></td>
+              <td><span class="alter_text">发动机号</span></td>
+              <td ><span class="alter_text">{{afterCustomer.search.发动机号}}</span></td>
+            </tr>
+            <tr class="alter_tr">
+              <td><span class="alter_text">固定电话</span></td>
+              <td ><input class="alter_input" type="text" v-model="afterCustomer.search.固定电话"/></td>
+              <td><span class="alter_text">手机号码</span></td>
+              <td ><input class="alter_input" type="text" v-model="afterCustomer.search.手机号码"/></td>
+              <td><span class="alter_text">身份证号</span></td>
+              <td ><input class="alter_input" type="text" v-model="afterCustomer.search.身份证号"/></td>
+            </tr>
+            <tr class="alter_tr">
+              <td><span class="alter_text">登记日期</span></td>
+              <td ><input class="alter_input_date" type="date" v-model="afterCustomer.search.登记日期"/></td>
+              <td><span class="alter_text">交强险日期</span></td>
+              <td ><input class="alter_input_date" type="date" v-model="afterCustomer.search.交强险日期"/></td>
+              <td><span class="alter_text">商业险日期</span></td>
+              <td ><input class="alter_input_date" type="date" v-model="afterCustomer.search.商业险日期"/></td>
+            </tr>
+            <tr class="alter_tr">
+              <td><span class="alter_text">投保公司</span></td>
+              <td ><select class="alter_select" v-model="afterCustomer.search.投保公司">
+                <option value="无" selected>无</option>
+                <option value="平安保险" >平安保险</option>
+                <option value="6" >6座</option>
+                <option value="7" >7座</option>
+              </select></td>
+              <td><span class="alter_text">座位数</span></td>
+              <td ><select class="alter_select" v-model="afterCustomer.search.座位数">
+                <option value="2" >2座</option>
+                <option value="3" >3座</option>
+                <option value="4" selected>4座</option>
+                <option value="5" >5座</option>
+                <option value="6" >6座</option>
+                <option value="7" >7座</option>
+              </select></td>
+              <td><span class="alter_text">客户类型</span></td>
+              <td ><span class="alter_text">{{afterCustomer.search.客户类型}}</span></td>
+            </tr>
+            <tr class="alter_tr">
+              <td style="height: 50px"><span class="alter_text">地址</span></td>
+              <td colspan="4"><textarea class="alter_input_textarea" v-model="afterCustomer.search.地址"></textarea></td>
+              <td ><button class="alter_tr_btn" @click="SendAfterCustomer">保存[基本]信息</button></td>
+            </tr>
+            <tr class="alter_tr">
+              <td style="height: 50px"><span class="alter_text">备注</span></td>
+              <td colspan="5"><textarea class="alter_input_textarea" v-model="afterCustomer.search.备注"></textarea></td>
             </tr>
             </tbody>
-
-
           </table>
         </div>
+        <span style="font-size: 20px">{{errorInfo}}</span><br>
+        <input class="alter_tr_btns alter_tr_btns_1" type="button" @click="sendStartCustomer('成功')" value="成功" >
+        <input class="alter_tr_btns alter_tr_btns_2" type="button" @click="sendStartCustomer('预约')" value="预约" >
+        <input class="alter_tr_btns alter_tr_btns_3" type="button" @click="sendStartCustomer('失败')" value="失败" >
+        <input class="alter_tr_btns alter_tr_btns_4" type="button" @click="sendStartCustomer('无效')" value="无效" >
+        <input class="alter_tr_btns alter_tr_btns_5" type="button" @click="setAfterCustomerDis()" value="取消" >
 
-        <input class="btn1 delBtn btn_position" type="button" @click="sendPostChangeSalesman" value="确定" >
-        <input class="btn1 btn_position" type="button" @click="ChangeSalesman" value="取消" >
+
       </div>
     </div>
   </div>
 </template>
 
-<script type="text/javascript">
+<script >
   import AddCustomer from "./addCustomer"
+
   export default {
-    name: "customerManagementWX",
+    name:"customerManagementWX",
     components: {
       AddCustomer
     },
@@ -204,7 +265,7 @@
             },
             CustomerService:"ALL",
             binding:false,
-            position:"ALL"
+            position:"无锡"
           },
           info:{
             username: null,
@@ -213,6 +274,46 @@
           pages:{
             Request:1,
             each_page:0
+          }
+        },
+        AfterCustomerDis:false,
+        afterCustomer:{
+          info:{
+            username: null,//账号
+            access_token: null
+          },
+          search:{
+            编号:null,
+            客户名称:"",
+            车牌号:"",
+            车架号:"",
+            品牌:"",
+            车型号:"",
+            发动机号:"",
+            固定电话:"",
+            手机号码:"",
+            身份证号:"",
+            登记日期:null,
+            交强险日期:null,
+            商业险日期:null,
+            投保公司:"无",
+            座位数:4,
+            客户类型:"",
+            地址:"",
+            备注:"",
+            状态:"",
+            客服:""
+          }
+
+        },
+        afterCustomerStart:{
+          info:{
+            username: null,//账号
+            access_token: null
+          },
+          search:{
+            编号:null,
+            状态:""
           }
         },
         alter:{
@@ -244,6 +345,7 @@
         CustomerService2:[],
         services:[],
         CS:[],
+        ZT:[],
         services_time1:[],
         services_time2:[],
         services_time3:[],
@@ -264,15 +366,17 @@
           startDate:"",
           endDate:""
         },
-        errorInfo:false,
-        errorDis:""
+        errorInfo:"",
+        errorDis:false,
+        text111:null
       }
     },
     mounted:function(){
       this.items.info.username = this.getCookie("username");
       this.items.info.access_token = this.getCookie("access_token");
-      this.sendGet("/getCustomerService?username="+this.items.info.username+"&access_token="+this.items.info.access_token);
-      this.setData(this.url,this.items)
+      let self = this;
+      setTimeout(self.setData(this.url,this.items),300);
+      setTimeout(self.sendGet("/getCustomerService?username="+this.items.info.username+"&access_token="+this.items.info.access_token),300);
     },
     watch: {
       'checkboxModel': {
@@ -287,6 +391,58 @@
       }
     },
     methods:{
+
+      setAfterCustomer(value){
+        this.setAfterCustomerDis();
+        this.afterCustomer.search.编号 = value["编号"];
+        this.afterCustomer.search.客户名称 = value["客户名称"];
+        this.afterCustomer.search.车牌号 = value["车牌号"];
+        this.afterCustomer.search.车架号 = value["车架号"];
+        this.afterCustomer.search.品牌 = value["品牌"];
+        this.afterCustomer.search.车型号 = value["车型号"];
+        this.afterCustomer.search.发动机号 = value["发动机号"];
+        if(value["固定电话"]===null||value["固定电话"]==="null"){
+          this.afterCustomer.search.固定电话 = "";
+        }else {
+          this.afterCustomer.search.固定电话 = value["固定电话"];
+        }
+        if(value["手机"]===null||value["手机"]==="null"){
+          this.afterCustomer.search.手机号码 = "";
+        }else {
+          this.afterCustomer.search.手机号码 = value["手机"];
+        }
+
+
+        this.afterCustomer.search.身份证号 = value["身份证号"];
+        this.afterCustomer.search.登记日期 = this.getDates(value["登记日期"]);
+        this.afterCustomer.search.交强险日期 = this.getDates(value["交强险日期"]);
+        this.afterCustomer.search.商业险日期 = this.getDates(value["商业险日期"]);
+        this.afterCustomer.search.投保公司 = value["投保公司"];
+        this.afterCustomer.search.座位数 = value["座位数"];
+        this.afterCustomer.search.客户类型 = value["客户类型"];
+        this.afterCustomer.search.地址 = value["地址"];
+        this.afterCustomer.search.备注 = value["备注"];
+        this.afterCustomer.search.状态 = value["状态"];
+        this.afterCustomer.search.客服 = value["客服"];
+
+        this.afterCustomerStart.search.编号 = value["编号"];
+      },
+      setAfterCustomerDis(){
+        this.AfterCustomerDis = !this.AfterCustomerDis;
+        this.errorInfo=""
+      },
+      SendAfterCustomer(){
+        this.afterCustomer.info.username=this.getCookie("username");
+        this.afterCustomer.info.access_token=this.getCookie("access_token");
+        this.sendPost("/setAfterCustomer",this.afterCustomer)
+      },
+      sendStartCustomer(value){
+        this.afterCustomerStart.info.username=this.getCookie("username");
+        this.afterCustomerStart.info.access_token=this.getCookie("access_token");
+        this.afterCustomerStart.search.状态 = value;
+        this.sendPost("/setStartCustomer",this.afterCustomerStart)
+      },
+
 
       checkSingle:function(value){
         this.checkAll = false;
@@ -384,50 +540,59 @@
       },
       //发送数据
       sendPost(url,sendData){
-        let self = this;
-//      console.log("sendPost");
-        this.$ajax.post(self.$store.state.url+url, sendData, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }).then(function (response) {
-          self.analysis(response.data);
-        }).catch(function (error) {
-          console.log(error);
-        });
+        if(this.getCookie("access_token")){
+          let self = this;
+          this.$ajax.post(self.$store.state.url+url, sendData, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(function (response) {
+            self.analysis(response.data);
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }else {
+          this.$router.push('../login');
+        }
       },
       sendGet(url){
-        let self = this;
-//      console.log("sendPost");
-        this.$ajax.get(self.$store.state.url+url, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }).then(function (response) {
-          self.CustomerService=response.data.information
-//        self.analysis(response.data);
-        }).catch(function (error) {
-          console.log(error);
-        });
+        if(this.getCookie("access_token")){
+          let self = this;
+          this.$ajax.get(self.$store.state.url+url, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }).then(function (response) {
+            self.CustomerService=response.data.information
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }else {
+          this.$router.push('../login');
+        }
       },
       //处理数据
       analysis(dataSource){
-        if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1003000){
+        if(dataSource.code.MessageCode===1001000||dataSource.code.MessageCode===1003000||dataSource.code.MessageCode===1002000||dataSource.code.MessageCode===1002005){
           if(dataSource.code.MessageCode===1001000){
             this.$store.commit("setErrorinfo","");
             this.services = dataSource.information;
             this.CS = [];
+            this.ZT = [];
             this.services_time1=[];
             this.services_time2=[];
             this.services_time3=[];
             this.getServicesDate();
             this.tfoot.total = dataSource.pages.total;
-          }else if(dataSource.code.MessageCode===1003000){
+          }else if(dataSource.code.MessageCode===1003000||dataSource.code.MessageCode===1002000){
             this.delInfodel();
+            this.setData(this.url,this.items)
+          }else if(dataSource.code.MessageCode===1002005){
+            this.errorInfo=dataSource.code.MsgInfo;
             this.setData(this.url,this.items)
           }
 
-        }else if(dataSource.code.MessageCode===1003001){
+        }else if(dataSource.code.MessageCode===1003001||dataSource.code.MessageCode===1002002){
           this.ErrorInfo(dataSource.code.MsgInfo)
         }else{
           this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);
@@ -437,15 +602,21 @@
       getServicesDate(){
         for(let i = 0;this.services.length>i;i++){
           if (this.services[i]["客服"]==="null"||this.services[i]["客服"]==="客服"){
-            this.CS.push("")
+            this.CS.push("—")
           }else {
             this.CS.push(this.services[i]["客服"])
+          }
+          if (this.services[i]["状态"]==="null"){
+            this.ZT.push("未处理")
+          }else {
+            this.ZT.push(this.services[i]["状态"])
           }
           this.services_time1.push(this.getDates(this.services[i]["商业险日期"]));
           this.services_time2.push(this.getDates(this.services[i]["交强险日期"]));
           this.services_time3.push(this.getDates(this.services[i]["登记日期"]))
 //        console.log(this.CS)
         }
+
       },
       //变更业务员
       ChangeSalesman(){
@@ -453,33 +624,37 @@
       },
       //变更业务员
       ChangeSalesman2(value){
+
         this.CustomerServiceDis = !this.CustomerServiceDis;
         this.alter.checkboxModel=[];
         this.alter.checkboxModel.push(value);
-        this.sendPostChangeSalesman()
       },
       //变更业务员
       sendPostChangeSalesman(){
-//        console.log(this.alter.checkboxModel.length);
-        if(this.alter.checkboxModel.length!==0){
-          let self = this;
-          this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }).then(function (response) {
-            if(response.data.code.MessageCode===1001000){
-              this.ChangeSalesman();
-              self.setData(self.url,self.items)
-            }else {
-              self.ErrorInfo(response.data.code.MsgInfo)
-            }
-          }).catch(function (error) {
-            console.log(error);
-          });
-        }else{
-          this.ChangeSalesman();
-          this.ErrorInfo("请选择要变更的数据！")
+        if(this.getCookie("access_token")){
+          if(this.alter.checkboxModel.length!==0&&this.alter.CustomerService!=="客服"){
+            let self = this;
+            this.$ajax.post(self.$store.state.url+"/ChangeSalesman",self.alter, {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }).then(function (response) {
+              if(response.data.code.MessageCode===1001000||response.data.code.MessageCode===1002005){
+                self.ChangeSalesman();
+
+                self.setData(self.url,self.items)
+              }else {
+                self.ErrorInfo(response.data.code.MsgInfo)
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
+          }else{
+            this.ChangeSalesman();
+            this.ErrorInfo("请选择要变更的数据！")
+          }
+        }else {
+          this.$router.push('../login');
         }
       },
       ErrorInfo(msg){
@@ -510,7 +685,19 @@
       getDates(value){
         let newDate = new Date();
         newDate.setTime(value * 1000);
-        return newDate.toLocaleDateString();
+        let ndm ;
+        if(newDate.getMonth()+1<10){
+          ndm= '-0'+(newDate.getMonth()+1)
+        }else {
+          ndm= '-'+(newDate.getMonth()+1)
+        }
+        let ndd ;
+        if(newDate.getDate()<10){
+          ndd= '-0'+newDate.getDate()
+        }else {
+          ndd= '-'+newDate.getDate()
+        }
+        return newDate.getFullYear()+ndm+ndd;
       },
       getTimeStamp(value){
         return new Date(value+" 12:0:0").getTime()/1000
@@ -615,7 +802,7 @@
 
   .table{
     width: 100%;
-    height: 100%;
+    height: auto;
     border-collapse:collapse;
 
   }
@@ -670,11 +857,9 @@
   .input_{
     width: 260px;
   }
-
   .tbody_tr{
     font-size: 10px;
   }
-
   ul,li{
     margin: 0px;
     padding: 0px;
@@ -727,7 +912,6 @@
     margin-right: 10px;
     float: right;
   }
-
   span{
     margin-right: 10px;
   }
@@ -735,7 +919,6 @@
     width: 120px;
     height: 18px;
   }
-
   .btn1{
     /*display: inline-block;*/
     line-height: 1;
@@ -748,7 +931,7 @@
     outline: 0;
     margin: 0;
     padding: 7px 9px;
-    font-size: 12px;
+    font-size: 13px;
     border-radius: 4px;
     color: #fff;
     background-color: #20a0ff;
@@ -767,7 +950,6 @@
   .delBtn{
     background-color: #d9534f;
   }
-
   .changingDiv{
     position: absolute;
     background-color: #d9edf7;
@@ -778,7 +960,6 @@
     border: 5px solid #737373;
     border-radius: 20px;
   }
-
   .alter{
     width: 100%;
     height: 100%;
@@ -789,11 +970,11 @@
   }
   .alterCustomer{
     width: 1000px;
-    height: 600px;
+    height: 450px;
     border: 2px solid #00BFFF;
     border-radius: 20px;
     margin-left: 25%;
-    margin-top: 5%;
+    margin-top: 10%;
     background-color: #F8F8FF;
 
   }
@@ -805,20 +986,140 @@
     font-family: "楷体";
   }
   .alterCustomer_info{
-    width: 100%;
-    height: 500px;
+    width: 980px;
+    height: 290px;
     margin-top: 10px;
-    background-color: #d9534f;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    /*background-color: #d9534f;*/
   }
   .btn_position{
     margin-top: 10px;
   }
   .alter_tr{
-    font-size: 18px;
+    font-size: 15px;
     /*height: 20px;*/
   }
-  .alter_td{
-    display: inline-block;
+  .alter_text{
+    margin-left: 10px;
+    float: left;
+  }
+  input{
+    font-weight: 600;
+    font-size: 13px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+
+  .alter_tr_btn {
+    width: 100%;
+    height: 100%;
+    color: #FFFFFF;
+    font-size: 20px;
+    font-family: 楷体;
+    font-weight: 900;
+    border: 1px solid #23527c;
+    background-color: #FF3030;
+    border-radius: 3px;
+  }
+  .alter_input{
+    width: 95%;
+    float: left;
+    font-weight: 600;
+    font-size: 16px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+  select{
+    width: 100px;
+    font-weight: 500;
+    font-size: 14px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+  .alter_select{
+    width: 95%;
+    float: left;
+    font-weight: 500;
+    font-size: 18px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+  .alter_input_textarea{
+    float: left;
+    width: 99%;
+    height: 99%;
+    font-size: 12px;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+  .alter_tr_btns{
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid #20a0ff;
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: 0;
+    margin: 0;
+    padding: 7px 9px;
+    font-size: 18px;
+    border-radius: 4px;
+    color: #fff;
+    width: 100px;
+    height: 50px;
+    margin-top: 10px;
+  }
+  .alter_tr_btns_1{
+    background-color: #FFB90F;
+    margin-left: 10px;
+  }
+  .alter_tr_btns_2{
+    background-color: #1E90FF;
+    margin-left: 10px;
+  }
+  .alter_tr_btns_3{
+    background-color: #FF4500;
+    margin-left: 10px;
+  }
+  .alter_tr_btns_4{
+    background-color: #363636;
+    margin-left: 10px;
+  }
+
+  .alter_tr_btns_5{
+    background-color: #398439;
+    width: 100px;
+    height: 35px;
+    font-size: 15px;
+    float: right;
+    margin-top: 25px;
+    margin-right: 15px;
+  }
+  .alter_input_date{
+    width: 95%;
+    float: left;
+    font-weight: 600;
+    font-size: 16px;
+    font-family: 楷体;
+    border: 2px solid #CDC9C9;
+    border-radius: 5px;
+  }
+
+  ::-webkit-inner-spin-button { visibility: hidden; }
+  ::-webkit-calendar-picker-indicator {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    box-shadow: inset 0 1px #fff, 0 1px #eee;
+    background-color: #eee;
+    background-image: -webkit-linear-gradient(top, #f0f0f0, #e6e6e6);
+    color: #666;
   }
 
 </style>

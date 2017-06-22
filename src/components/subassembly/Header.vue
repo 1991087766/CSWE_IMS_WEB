@@ -4,7 +4,8 @@
     <div id="setting">
       <span @click="devices()" class="name">
         {{uName}}
-      </span>　( <router-link to="/home/news"  tag="a"active-class="active">{{news}}</router-link> )
+      </span>
+      <!--　( <router-link to="/home/news"  tag="a"active-class="active">{{news}}</router-link> )-->
     </div>
   </div>
 
