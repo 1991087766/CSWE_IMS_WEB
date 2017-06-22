@@ -24,6 +24,36 @@
         <input class="btn btn1" type="button"  value="退出账号" >
       </div>
     </div>
+      <div class="changingInfo" v-if="changingInfoDis">
+          <br><span>修改信息</span><br><br>
+          <div class="changingInfo">
+              <br>
+              客服：
+              <select v-model="alter.CustomerService" >
+                  <option value="客服" selected>-全部-</option>
+                  <option v-for="cs in CustomerService" :value="cs">{{cs}}</option>
+              </select>
+              <br><br><br>
+              <input class="btn1 delBtn" type="button" @click="sendPostChangeSalesman" value="确定" >
+              <input class="btn1" type="button" @click="ChangeSalesman" value="取消" >
+          </div>
+      </div>
+      <div class="changing" v-if="changingPWD_Dis">
+          <div class="changingPWD" >
+              <br><span>修改密码</span><br><br>
+              <div class="changingInfo">
+                  <br>
+                  客服：
+                  <select v-model="alter.CustomerService" >
+                      <option value="客服" selected>-全部-</option>
+                      <option v-for="cs in CustomerService" :value="cs">{{cs}}</option>
+                  </select>
+                  <br><br><br>
+                  <input class="btn1 delBtn" type="button" @click="sendPostChangeSalesman" value="确定" >
+                  <input class="btn1" type="button" @click="ChangeSalesman" value="取消" >
+              </div>
+          </div>
+      </div>
   </div>
 </template>
 
@@ -49,12 +79,10 @@ export default {
         search:{
           assect:null
         },
-        info:{
           info:{
-            username: null,
-            access_token: null
+              username: null,
+              access_token: null
           }
-        }
 
       },
       info:{
@@ -68,7 +96,9 @@ export default {
         地址:null//办公地点
       },
       url:"/getIndividual",
-
+        services:null,
+        changingInfoDis:false,
+        changingPWD_Dis:false,
       errorInfo:false,
       errorDis:""
     }
@@ -79,14 +109,14 @@ export default {
   },
   methods:{
     setParameter(){
-      this.info.姓名=this.$store.state.uImgurl
-      this.info.性别=this.$store.state.uName
-      this.info.编号=this.$store.state.uNumber
-      this.info.部门=this.$store.state.uMail
-      this.info.管理=this.$store.state.uGender
-      this.info.手机=this.$store.state.uDepartment
-      this.info.邮箱=this.$store.state.uPlace
-      this.info.地址=this.$store.state.uPhone
+      this.info.姓名=this.services.姓名;
+      this.info.性别=this.services.性别;
+      this.info.编号=this.services.编号;
+      this.info.部门=this.services.部门;
+      this.info.管理=this.services.管理;
+      this.info.手机=this.services.手机;
+      this.info.邮箱=this.services.邮箱;
+      this.info.地址=this.services.地址;
     },
     sendPost(url,sendData){
       let self = this;
@@ -101,6 +131,18 @@ export default {
         console.log(error);
       });
     },
+      sendGet(url){
+          let self = this;
+          this.$ajax.get(self.$store.state.url+url, {
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              }
+          }).then(function (response) {
+        self.analysis(response.data);
+          }).catch(function (error) {
+              console.log(error);
+          });
+      },
     analysis(dataSource){
       if(dataSource.code.MessageCode===1001000
         ||dataSource.code.MessageCode===1002005
@@ -109,13 +151,8 @@ export default {
         if(dataSource.code.MessageCode===1001000){
           this.$store.commit("setErrorinfo","");
           this.services = dataSource.information;
-          this.CS = [];
-          this.tfoot.total = dataSource.pages.total;
-        }else {
-          this.addInfo=false;
-          this.setData(this.url,this.items)
+            this.setParameter();
         }
-
       }else if (dataSource.code.MessageCode===1003002){
         this.addInfo = dataSource.code.MsgInfo
       }else if(dataSource.code.MessageCode===1003001){
@@ -246,6 +283,34 @@ textarea{
   }
 .btn2{
   background-color: #ec971f;
+}
+.changingInfo{
+    position: absolute;
+    background-color: #d9edf7;
+    top: 30%;
+    left: 35%;
+    width: 400px;
+    height: 200px;
+    border: 5px solid #737373;
+    border-radius: 20px;
+}
+.alter{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: rgba(98, 96, 104, 0.6);
+}
+.changingInfo{
+    position: absolute;
+    background-color: #d9edf7;
+    top: 30%;
+    left: 35%;
+    width: 400px;
+    height: 200px;
+    border: 5px solid #737373;
+    border-radius: 20px;
 }
 
 </style>
