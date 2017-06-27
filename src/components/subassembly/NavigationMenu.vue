@@ -11,7 +11,12 @@ export default {
   name:"NavMenu",
   components: {
       NavMenuSalesman
-   }
+   },
+  mounted() {
+    if(this.getCookie("username")===null && this.getCookie("username")===""){
+      this.$router.push('../login')
+    }
+  }
 }
 </script>
 

@@ -37,7 +37,7 @@ const store = new Vuex.Store({
       access_token: null,//access_token
       admin: false,//是否管理员
       reason: 0,//错误状态值
-      url:"http://127.0.0.1:8802",
+      url:"http://www.mcigm.com:8802",
       news:0,
       ip:null,
       address:null,
