@@ -60,7 +60,7 @@ export default {
         this.setCookie("access_token",dataSource.access.access_token,7);
         this.setCookie("admin",dataSource.access.admin,7);
 
-        this.$router.push('../home/CustomerMA')
+        this.$router.push('../home/mypage')
 
       }else{
         this.$store.commit("setErrorinfo",dataSource.code.MsgInfo);

@@ -26,12 +26,12 @@ export default new Router({
       component: Login
     },
     {
-      path: '/loading',
+      path: '/',
       name: 'Loading',
       component: Loading
     },
     {
-      path: '/',
+      path: '/home',
       name: 'Home',
       component: Home,
       children:[

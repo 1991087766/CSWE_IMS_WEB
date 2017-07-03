@@ -24,11 +24,11 @@
         <table class="table">
           <thead>
           <tr class="tr_title">
-            <td style="width: 7%">标记</td>
+            <td style="width: 10%">标记</td>
             <td style="width: 5%">姓名</td>
             <td style="width: 7%">账号</td>
             <td style="width: 7%">手机</td>
-            <td style="width: 9%">邮件</td>
+            <td style="width: 11%">邮件</td>
             <td style="width: 5%">部门</td>
             <td style="width: 5%">管理</td>
             <td style="width: 5%">状态</td>

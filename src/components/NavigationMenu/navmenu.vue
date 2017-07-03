@@ -2,7 +2,7 @@
   <div id="navmenu">
     <div id="menu">
       <div id="myPage"class="btn">
-        <router-link to="/mypage"  tag="span" active-class="active">
+        <router-link to="/home/mypage"  tag="span" active-class="active">
           我 的 页 面
         </router-link>
       </div>
@@ -17,7 +17,7 @@
 
       <div id="Other" class="Other">
         <ul class="Others" >
-          <router-link to="/Setting" tag="li" active-class="active">
+          <router-link to="/home/Setting" tag="li" active-class="active">
               个 人 中 心
           </router-link>
           <router-link v-for="name in others" :to="{path:name.path}" tag="li" active-class="active3" v-if="getAdmin">
@@ -38,29 +38,29 @@ export default {
       products:[
         {
           name:'山 东',
-          path:'/CustomerMsd',
+          path:'/home/CustomerMsd',
           active:false
         },
         {
           name:'苏 州',
-          path:'/CustomerMsz',
+          path:'/home/CustomerMsz',
           active:false
         },
         {
           name:'无 锡',
-          path:'/CustomerMwx',
+          path:'/home/CustomerMwx',
           active:false
         }
       ],
       others:[
         {
           name:'客 户 管 理',
-          path:'/CustomerMA',
+          path:'/home/CustomerMA',
           active:false
         },
         {
           name:'部 门 管 理',
-          path:'/StaffManagement',
+          path:'/home/StaffManagement',
           active:false
 //        },
 //        {
@@ -165,6 +165,7 @@ li{
   margin-left: -5px;
   float: left;
   list-style-type:none;
+  border-radius: 10px;
 }
 
 </style>

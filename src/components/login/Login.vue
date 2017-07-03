@@ -39,7 +39,7 @@ export default {
       if(this.loginInspect()){
         this.setCookieNull();
         if(this.getCookie("username") !=="" && this.getCookie("access_token") !=="" ){
-          this.$router.push('../Loading');
+          this.$router.push('../');
         }else {
           this.dataArrangement()
         }
@@ -74,7 +74,7 @@ export default {
         this.setCookie("access_token",dataSource.access.access_token,2);
         this.setCookie("admin",dataSource.access.admin,2);
         this.setCookie("NAME",dataSource.access.Name,2);
-        this.$router.push('../Loading');
+        this.$router.push('../');
 
       }else{
         this.$router.push('../login');
